@@ -1,0 +1,27 @@
+{
+  "name": "koa-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env nodemon --watch '**/*.ts' --exec ts-node --files ./index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0",
+    "koa2-cors": "^2.0.6"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.1",
+    "@types/koa-router": "^7.4.2",
+    "@types/koa-static": "^4.0.1",
+    "@types/koa2-cors": "^2.0.1",
+    "cross-env": "^7.0.3",
+    "typescript": "^4.2.4"
+  }
+}
