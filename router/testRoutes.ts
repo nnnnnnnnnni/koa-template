@@ -8,4 +8,9 @@ export default [
     methods: "GET",
     Middlewares: [check, test],
   },
+  {
+    path: "/test1",
+    methods: "GET",
+    Middlewares: [check, test],
+  },
 ] as IRoute[];

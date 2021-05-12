@@ -7,6 +7,8 @@ import koaBody from "koa-body";
 import koaStaic from "koa-static";
 import cors from "koa2-cors";
 import Router from "koa-router";
+import mongoose from "mongoose";
+// import validation from 'koa2-validation'
 const allRouter = new CRouter();
 const koaRouter = new Router();
 
@@ -17,8 +19,8 @@ export default class App {
     this.app = new Koa();
     this.config = config;
     this.initializeMiddlewares();
-    this.dbConnect();
     this.initializeRoutes(allRouter.getAllRoutes());
+    this.dbConnect();
     this.errorHandler();
   }
 
@@ -37,8 +39,6 @@ export default class App {
     this.app.use(koaStaic(this.config.localStatic));
     // 注册跨域
     this.app.use(cors());
-    // 链接db
-    this.dbConnect();
   }
 
   private initializeRoutes(routes: IRoute[]) {
@@ -59,24 +59,44 @@ export default class App {
       } else if (route.methods == "DELETE") {
         koaRouter.delete(route.path, ...route.Middlewares);
       } else {
-        throw new Error(`Invalid Restful request: [methds: ${route.methods} path: ${route.path}]`);
+        throw new Error(
+          `Invalid Restful request: [methds: ${route.methods} path: ${route.path}]`
+        );
       }
     });
     this.app.use(koaRouter.routes()).use(koaRouter.allowedMethods());
   }
 
-  private dbConnect() { }
-
-  private errorHandler() {
-    this.app.on('error', (err) => {
-      console.log(err)
-    })
+  private dbConnect() {
+    mongoose
+      .connect(
+        `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name}`,
+        {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          useCreateIndex: true,
+        }
+      )
+      .then(() => {
+        console.log(
+          `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`
+        );
+      })
+      .catch((err) => {
+        console.log("mongoose连接异常", err);
+      });
+    mongoose.connection.on("disconnected", () => {
+      console.log("数据库已经断开连接");
+    });
   }
 
-  public start(port?: number, cb?: Function) {
-    const _port = port ?? this.config.prot;
-    this.app.listen(_port, () => {
-      console.log(`app start at port: ${_port}`);
+  private errorHandler() {
+    this.app.use(() => {});
+  }
+
+  public start(cb?: Function) {
+    this.app.listen(this.config.prot, () => {
+      console.log(`app start at port: ${this.config.prot}`);
       if (cb != undefined) cb();
     });
   }

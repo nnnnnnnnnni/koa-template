@@ -1,15 +1,15 @@
 export interface IConfig {
   prot: number;
   localStatic: string;
-  mongo?: {
+  mongo: {
     host: string;
-    port: string;
-    name?: string;
+    port: number;
+    name: string;
     pass?: string;
   };
   redis?: {
     host: string;
-    port: string;
+    port: number;
     name: string;
     pass: string;
   };
