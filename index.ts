@@ -19,6 +19,7 @@ export default class App {
     this.initializeMiddlewares();
     this.dbConnect();
     this.initializeRoutes(allRouter.getAllRoutes());
+    this.errorHandler();
   }
 
   private initializeMiddlewares() {
@@ -64,7 +65,13 @@ export default class App {
     this.app.use(koaRouter.routes()).use(koaRouter.allowedMethods());
   }
 
-  private dbConnect() {}
+  private dbConnect() { }
+
+  private errorHandler() {
+    this.app.on('error', (err) => {
+      console.log(err)
+    })
+  }
 
   public start(port?: number, cb?: Function) {
     const _port = port ?? this.config.prot;
