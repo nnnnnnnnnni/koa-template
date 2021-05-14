@@ -1,4 +1,4 @@
-import Koa from "koa";
+import Koa, { Context } from "koa";
 import { config } from "./config";
 import { IConfig } from "./interface/config";
 import { IRoute } from "./interface/route";
@@ -8,15 +8,15 @@ import koaStaic from "koa-static";
 import cors from "koa2-cors";
 import Router from "koa-router";
 import mongoose from "mongoose";
-// import validation from 'koa2-validation'
+import Logger from "./logs";
 const allRouter = new CRouter();
 const koaRouter = new Router();
 
 export default class App {
-  public app: Koa;
+  public app: Koa<{}, Context>;
   private config: IConfig;
   constructor(config: IConfig) {
-    this.app = new Koa();
+    this.app = new Koa<{}, Context>();
     this.config = config;
     this.initializeMiddlewares();
     this.initializeRoutes(allRouter.getAllRoutes());
@@ -25,6 +25,8 @@ export default class App {
   }
 
   private initializeMiddlewares() {
+    // 日志中间件
+    this.app.use(Logger.infoLog);
     // 注册 解析
     this.app.use(
       koaBody({
@@ -42,14 +44,7 @@ export default class App {
   }
 
   private initializeRoutes(routes: IRoute[]) {
-    const routeSet = new Set<string>();
     routes.map((route) => {
-      const routeKey = `${route.methods}:${route.path}`;
-      if (routeSet.has(routeKey)) {
-        console.log("路由重复: " + JSON.stringify(route));
-      } else {
-        routeSet.add(routeKey);
-      }
       if (route.methods == "GET") {
         koaRouter.get(route.path, ...route.Middlewares);
       } else if (route.methods == "POST") {
@@ -59,9 +54,7 @@ export default class App {
       } else if (route.methods == "DELETE") {
         koaRouter.delete(route.path, ...route.Middlewares);
       } else {
-        throw new Error(
-          `Invalid Restful request: [methds: ${route.methods} path: ${route.path}]`
-        );
+        Logger.log("APP", `Invalid Restful Request: [methds: ${route.methods} path: ${route.path}]`, "info");
       }
     });
     this.app.use(koaRouter.routes()).use(koaRouter.allowedMethods());
@@ -69,34 +62,31 @@ export default class App {
 
   private dbConnect() {
     mongoose
-      .connect(
-        `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name}`,
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          useCreateIndex: true,
-        }
-      )
+      .connect(`mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name}`, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+      })
       .then(() => {
-        console.log(
-          `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`
-        );
+        Logger.log("MONGO", `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`, "info", false);
       })
       .catch((err) => {
-        console.log("mongoose连接异常", err);
+        Logger.log("MONGO", `mongoose连接异常: ${err}`, "error");
       });
     mongoose.connection.on("disconnected", () => {
-      console.log("数据库已经断开连接");
+      Logger.log("MONGO", `数据库已经断开连接`, "info");
     });
   }
 
   private errorHandler() {
-    this.app.use(() => {});
+    this.app.on("error", (err) => {
+      Logger.log("APP", `APP Error: ${err}`, "error");
+    });
   }
 
   public start(cb?: Function) {
     this.app.listen(this.config.prot, () => {
-      console.log(`app start at port: ${this.config.prot}`);
+      Logger.log("APP", `app start at port: ${this.config.prot}`, "info", false);
       if (cb != undefined) cb();
     });
   }

@@ -1,4 +1,3 @@
-import koa from 'koa'
 import { IMiddleware } from 'koa-router';
 
 export type IMethod = "GET" | "POST" | "PUT" | "DELETE";

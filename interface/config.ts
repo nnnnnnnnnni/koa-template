@@ -1,4 +1,5 @@
 export interface IConfig {
+  environment: 'development' | 'production'
   prot: number;
   localStatic: string;
   mongo: {
