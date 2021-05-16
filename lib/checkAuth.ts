@@ -8,7 +8,7 @@ import jwt from "../lib/jwt";
  * @returns
  */
 export default async (ctx: Context, next: Next) => {
-  const token = ctx.request.header["authorization"] || ctx.cookies.get('token');
+  const token = ctx.request.header["authorization"] || ctx.cookies.get("token");
   let msg = "";
   if (!token) {
     ctx.status = 403;
@@ -19,7 +19,7 @@ export default async (ctx: Context, next: Next) => {
   } else {
     ctx.status = 200;
     const [_, payload, __] = token.split(".");
-    ctx.user = JSON.parse(Buffer.from(payload, 'base64').toString("utf8"));
+    ctx.user = JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
     return next();
   }
   if (msg != "") {
@@ -29,5 +29,4 @@ export default async (ctx: Context, next: Next) => {
       data: {},
     });
   }
-  
 };

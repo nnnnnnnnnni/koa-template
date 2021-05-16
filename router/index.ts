@@ -19,7 +19,11 @@ export default class Routes {
         this.routeSet.add(routeKey);
       }
       if (route.Middlewares.length == 0) {
-        Logger.log("APP", `Invalid Middleware Function: [methds: ${route.methods} path: ${route.path}]`, "info");
+        Logger.log(
+          "APP",
+          `Invalid Middleware Function: [methds: ${route.methods} path: ${route.path}]`,
+          "info"
+        );
       }
       this.allRoute.push(route);
     }
