@@ -9,16 +9,11 @@ type TType = "MONGO" | "APP" | "REDIS";
 
 export default class Logger {
   public static log(type: TType, msg: string, label: TLabel, isWrite: boolean = true) {
-    const info = `[${type}] [${label}]: ${msg}`;
-    console.log(info);
+    const info = `[${type}] [${label}]: ${msg.toString()}`;
+    console.log(info)
     if (isWrite) {
       const file = path.resolve(__dirname, this.getFileName(type));
-      fs.open(file, "a+", (err) => {
-        if (err) {
-          console.log(`[APP] [error]: ${err}`);
-        }
-        fs.appendFile(file, info + os.EOL, () => {});
-      });
+      fs.appendFile(file, `${moment().format("MM/DD HH:mm:ss")} ` +info + os.EOL, () => {});
     }
   }
 

@@ -9,6 +9,7 @@ import cors from "koa2-cors";
 import Router from "koa-router";
 import mongoose from "mongoose";
 import Logger from "./logs";
+import checkAuth from "./lib/checkAuth";
 const allRouter = new CRouter();
 const koaRouter = new Router();
 
@@ -19,8 +20,8 @@ export default class App {
     this.app = new Koa<{}, Context>();
     this.config = config;
     this.initializeMiddlewares();
-    this.initializeRoutes(allRouter.getAllRoutes());
     this.dbConnect();
+    this.initializeRoutes(allRouter.getAllRoutes());
     this.errorHandler();
   }
 
@@ -45,16 +46,24 @@ export default class App {
 
   private initializeRoutes(routes: IRoute[]) {
     routes.map((route) => {
+      let _middilewares = route.Middlewares;
+      if (route.needLogin) {
+        _middilewares.unshift(checkAuth);
+      }
       if (route.methods == "GET") {
-        koaRouter.get(route.path, ...route.Middlewares);
+        koaRouter.get(route.path, ..._middilewares);
       } else if (route.methods == "POST") {
-        koaRouter.post(route.path, ...route.Middlewares);
+        koaRouter.post(route.path, ..._middilewares);
       } else if (route.methods == "PUT") {
-        koaRouter.put(route.path, ...route.Middlewares);
+        koaRouter.put(route.path, ..._middilewares);
       } else if (route.methods == "DELETE") {
-        koaRouter.delete(route.path, ...route.Middlewares);
+        koaRouter.delete(route.path, ..._middilewares);
       } else {
-        Logger.log("APP", `Invalid Restful Request: [methds: ${route.methods} path: ${route.path}]`, "info");
+        Logger.log(
+          "APP",
+          `Invalid Restful Request: [methds: ${route.methods} path: ${route.path}]`,
+          "info"
+        );
       }
     });
     this.app.use(koaRouter.routes()).use(koaRouter.allowedMethods());
@@ -62,13 +71,21 @@ export default class App {
 
   private dbConnect() {
     mongoose
-      .connect(`mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name}`, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-      })
+      .connect(
+        `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name}`,
+        {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          useCreateIndex: true,
+        }
+      )
       .then(() => {
-        Logger.log("MONGO", `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`, "info", false);
+        Logger.log(
+          "MONGO",
+          `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`,
+          "info",
+          false
+        );
       })
       .catch((err) => {
         Logger.log("MONGO", `mongoose连接异常: ${err}`, "error");
@@ -80,13 +97,18 @@ export default class App {
 
   private errorHandler() {
     this.app.on("error", (err) => {
-      Logger.log("APP", `APP Error: ${err}`, "error");
+      Logger.log("APP", err, "error");
     });
   }
 
   public start(cb?: Function) {
     this.app.listen(this.config.prot, () => {
-      Logger.log("APP", `app start at port: ${this.config.prot}`, "info", false);
+      Logger.log(
+        "APP",
+        `app start at port: ${this.config.prot}`,
+        "info",
+        false
+      );
       if (cb != undefined) cb();
     });
   }

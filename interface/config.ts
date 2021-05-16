@@ -1,7 +1,12 @@
 export interface IConfig {
-  environment: 'development' | 'production'
+  environment: "development" | "production";
   prot: number;
   localStatic: string;
+  jwt: {
+    alg: string;
+    secret: string;
+    time: number;
+  };
   mongo: {
     host: string;
     port: number;
@@ -11,7 +16,6 @@ export interface IConfig {
   redis?: {
     host: string;
     port: number;
-    name: string;
-    pass: string;
+    pass?: string;
   };
 }

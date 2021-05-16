@@ -6,5 +6,6 @@ export default [
     path: "/test",
     methods: "GET",
     Middlewares: [test],
+    needLogin: true,
   },
 ] as IRoute[];

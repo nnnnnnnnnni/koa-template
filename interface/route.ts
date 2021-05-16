@@ -7,5 +7,6 @@ export type IRole = "user" | "admin" | "superAdmin";
 export interface IRoute {
   path: string;
   methods: IMethod;
-  Middlewares: IMiddleware[]
+  Middlewares: IMiddleware[],
+  needLogin: boolean;
 }
