@@ -12,8 +12,8 @@ export default class Logger {
     return `${type}.${moment().format("MM.DD")}`;
   }
 
-  public static log(type: TType, msg: string, label: TLabel, isWrite: boolean = true) {
-    const info = `[${type}] [${label}]: ${msg.toString()}`;
+  public static log(type: TType, msg: any, label: TLabel, isWrite: boolean = true) {
+    const info = `[${type}] [${label}]: ${msg}`;
     console.log(info)
     if (isWrite) {
       const file = path.resolve(__dirname, this.getFileName(type));
