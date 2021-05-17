@@ -59,11 +59,7 @@ export default class App {
       } else if (route.methods == "DELETE") {
         koaRouter.delete(route.path, ..._middilewares);
       } else {
-        Logger.log(
-          "APP",
-          `Invalid Restful Request: [methds: ${route.methods} path: ${route.path}]`,
-          "info"
-        );
+        Logger.log("APP", `Invalid Restful Request: [methds: ${route.methods} path: ${route.path}]`, "info");
       }
     });
     this.app.use(koaRouter.routes()).use(koaRouter.allowedMethods());
@@ -71,21 +67,13 @@ export default class App {
 
   private dbConnect() {
     mongoose
-      .connect(
-        `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name}`,
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          useCreateIndex: true,
-        }
-      )
+      .connect(`mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name}`, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useCreateIndex: true,
+      })
       .then(() => {
-        Logger.log(
-          "MONGO",
-          `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`,
-          "info",
-          false
-        );
+        Logger.log("MONGO", `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`, "info", false);
       })
       .catch((err) => {
         Logger.log("MONGO", `mongoose连接异常: ${err}`, "error");
@@ -103,12 +91,7 @@ export default class App {
 
   public start(cb?: Function) {
     this.app.listen(this.config.prot, () => {
-      Logger.log(
-        "APP",
-        `app start at port: ${this.config.prot}`,
-        "info",
-        false
-      );
+      Logger.log("APP", `app start at port: ${this.config.prot}`, "info", false);
       if (cb != undefined) cb();
     });
   }
