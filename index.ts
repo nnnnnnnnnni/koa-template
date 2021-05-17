@@ -84,8 +84,8 @@ export default class App {
   }
 
   private errorHandler() {
-    this.app.on("error", (err) => {
-      Logger.log("APP", err, "error");
+    this.app.on("error", (err: Error) => {
+      Logger.log("APP", err.stack, "error");
     });
   }
 
