@@ -10,6 +10,7 @@ import { checkAuth, applyUser } from "../lib/userCheck";
 import Redis from "../redis/index";
 import Utils from "../lib/utils";
 import { IValidation, IValidationField } from "interface/validation";
+import { config } from "../config";
 const Response = Utils.generateResponse;
 export default class Routes {
   allRoute: IRoute[] = [];
@@ -32,20 +33,24 @@ export default class Routes {
       } else {
         this.routeSet.add(routeKey);
       }
-      // 注册接口频率限制
+      // 注册 接口频率限制
       if (route.threshold) {
+        if(!config.redis) {
+          Logger.log('APP', `Invaild Redis Config With Route's Threshlod [methds: ${route.methods} path: ${route.path}]`, 'error');
+        }
         if (typeof route.threshold == "number") {
           route.Middlewares.unshift(this.setThreshold(route.threshold));
         } else {
           route.Middlewares.unshift(route.threshold.operation);
         }
       }
-      // 注册权限验证
+      // 注册 权限验证
       if (route.needLogin) {
         route.Middlewares.unshift(checkAuth);
       } else {
         route.Middlewares.unshift(applyUser);
       }
+      // 注册 接口字段判断
       if (route.validation) {
         route.Middlewares.unshift(this.setValidation(route.validation));
       }
@@ -82,7 +87,6 @@ export default class Routes {
     };
   }
 
-  // TODO: 验证
   setValidation(validation: IValidation): IMiddleware<any, Context> {
     return async (ctx: Context, next: Next) => {
       let validationData: IValidationField
@@ -97,22 +101,18 @@ export default class Routes {
         validationData = validation.query as IValidationField
         requestData = ctx.query
       }
-      const len = Object.keys(validationData).length;
-      let i = 0;
-      Object.keys(validationData).forEach(field => {
-        i ++;
-        const _isValidation = validationData[field].validate(requestData[field]);
-        if(_isValidation.error) {
+      const lenvalidationFields = Object.keys(validationData);
+      for(let i = 0;i <lenvalidationFields.length; i++) {
+        const field = lenvalidationFields[i];
+        const validation = validationData[field].validate(requestData[field]);
+        if(validation.error) {
           ctx.status = 400
-          ctx.body = Response(0, _isValidation.error.message.replace('\"value\"', `'${field}'`))
-          return false;
+          return ctx.body = Response(0, validation.error.message.replace('\"value\"', `'${field}'`))
         } else {
-          return true
+          continue;
         }
-      })
-      if(i == len) {
-        return next();
       }
+      return next();
     };
   }
 }
