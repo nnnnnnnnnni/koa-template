@@ -7,6 +7,9 @@ interface IJWTHeader {
   exp: number;
 }
 
+/**
+ * jwt 相关
+ */
 export default class JsonWebToken {
   public static secret = config.jwt.secret;
   public static alg = config.jwt.alg;

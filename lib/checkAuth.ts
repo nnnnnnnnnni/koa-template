@@ -5,9 +5,9 @@ const Response = Utils.generateResponse;
 
 /**
  * 验证jwt有效性
- * @param ctx
- * @param next
- * @returns
+ * @param {Context} ctx
+ * @param {Next} next
+ * @returns {Next | null}
  */
 export default async (ctx: Context, next: Next) => {
   const token = ctx.request.header["authorization"] || ctx.cookies.get("token");
@@ -23,6 +23,6 @@ export default async (ctx: Context, next: Next) => {
     return next();
   }
   if (msg != "") {
-    return ctx.body = Response(0, msg);
+    return (ctx.body = Response(0, msg));
   }
 };

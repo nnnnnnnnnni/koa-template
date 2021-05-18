@@ -74,7 +74,7 @@ export default class App {
         useCreateIndex: true,
       })
       .then(() => {
-        Logger.log("MONGO", `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`, "info", false);
+        Logger.log("MONGO", `mongodb://${this.config.mongo.host}:${this.config.mongo.port}/${this.config.mongo.name} 已连接`, "info", true, false);
       })
       .catch((err) => {
         Logger.log("MONGO", `mongoose连接异常: ${err}`, "error");
@@ -88,11 +88,11 @@ export default class App {
     const redisConnect = new redis(this.config.redis);
     redisConnect.connect(() => {
       this.app.context.redis = redisConnect;
-      Logger.log("REDIS", `redis://${this.config.redis?.host}:${this.config.redis?.port} 已连接`, "info", false);
+      Logger.log("REDIS", `redis://${this.config.redis?.host}:${this.config.redis?.port} 已连接`, "info", true, false);
     });
     redisConnect.monitor().then((monitor) => {
-      monitor.on("monitor", (time, args, source, database) => {
-        console.log(time, args, source, database);
+      monitor.on("monitor", (_time, args, source, database) => {
+        Logger.log('REDIS', `${source} ${args} ${database}`, 'info', false, true)
       });
     });
     return redisConnect;
@@ -106,7 +106,7 @@ export default class App {
 
   public start(cb?: Function) {
     this.app.listen(this.config.prot, () => {
-      Logger.log("APP", `app start at port: ${this.config.prot}`, "info", false);
+      Logger.log("APP", `app start at port: ${this.config.prot}`, "info", true, false);
       if (cb != undefined) cb();
     });
   }

@@ -22,13 +22,7 @@ export default class Redis {
   }
 
   /**
-   * 
-   * @param db 数据库
-   * @param key 值
-   * @param val 对象
-   * @param expiryMode 是否过期模式
-   * @param time 过期时间（s）
-   * @returns 
+   * @param time 过期时间(s)
    */
   public static async set(db: number = 1, key: string, val: string, expiryMode?: 'EX' | 'PX', time?: number){
     return new Promise<void>((resolve, reject) => {

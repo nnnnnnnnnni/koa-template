@@ -10,8 +10,8 @@ export interface IRoute {
   methods: IMethod;
   Middlewares: IMiddleware<any, Context>[],
   needLogin: boolean;
-  threshold?: number | {
+  threshold?: number | {      // 每分钟的接口请求最大数
     times: number,
     operation: IMiddleware<any, Context>
-  };     // 每分钟的接口请求最大数
+  };
 }

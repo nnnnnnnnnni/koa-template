@@ -21,6 +21,10 @@ export default class Utils {
       .toString("base64")
       .replace(new RegExp("[`~%!@#^+-=''?~！@#￥……&——‘”“'？*()（），,。.、]", "g"), this.randomChar());
   }
+
+  /**
+   * 统一生成 response 的方法
+   */
   public static generateResponse(code: TCode, message: string, data = {}): IResponse {
     return {
       code,
