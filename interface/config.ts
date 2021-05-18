@@ -3,6 +3,7 @@ export interface IConfig {
   prot: number;
   localStatic: string;
   jwt: {
+    name: string;
     alg: string;
     secret: string;
     time: number;

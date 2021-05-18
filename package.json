@@ -12,12 +12,12 @@
   "dependencies": {
     "ioredis": "^4.27.2",
     "ioredis-koa": "^1.0.0",
+    "joi": "^17.4.0",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
     "koa-router": "^10.0.0",
     "koa-static": "^5.0.0",
     "koa2-cors": "^2.0.6",
-    "koa2-validation": "^1.1.0",
     "moment": "^2.29.1",
     "mongoose": "^5.12.8"
   },

@@ -19,7 +19,7 @@ export default class JsonWebToken {
    * @param payload token内非加密参数
    * @returns jwt
    */
-  public static generate(payload: { [key: string]: string }) {
+  public static generate(payload: { [key: string]: string | number }) {
     const header: IJWTHeader = {
       typ: "JWT",
       alg: this.alg,

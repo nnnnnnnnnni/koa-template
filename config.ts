@@ -16,6 +16,7 @@ export const config: IConfig = {
     pass: '',
   },
   jwt: {
+    name: 'KOA-TEMPLATE-TOKEN',
     alg: 'sha256',
     secret: 'KOA_TEMPLATE_SECRET',
     time: 1000 * 60 * 60 * 12

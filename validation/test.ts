@@ -1,11 +1,11 @@
-import { Context, Next } from "koa";
+import { IValidation } from "interface/validation";
+import Joi from "joi";
 
-export const check = async (ctx: Context, next: Next) => {
-  if (!ctx.request.query.name) {
-    console.log(1);
-    next();
-  } else {
-    console.log(2);
-    ctx.body = "no"
+export default{
+  test: {
+    query: {
+      name: Joi.string().required(),
+      age: Joi.number().required()
+    }
   }
-};
+} as {[key: string]: IValidation}
