@@ -12,7 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "ioredis": "^4.27.2",
-    "ioredis-koa": "^1.0.0",
     "joi": "^17.4.0",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
