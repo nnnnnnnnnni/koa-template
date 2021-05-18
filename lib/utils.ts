@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { TCode, IResponse } from "interface/response";
 
 export default class Utils {
   public static isEmail(mail: string) {
@@ -19,5 +20,13 @@ export default class Utils {
       .randomBytes(len || 32)
       .toString("base64")
       .replace(new RegExp("[`~%!@#^+-=''?~！@#￥……&——‘”“'？*()（），,。.、]", "g"), this.randomChar());
+  }
+  public static generateResponse(code: TCode, message: string, data = {}): IResponse {
+    return {
+      code,
+      message,
+      data,
+      timestamp: new Date().getTime(),
+    };
   }
 }

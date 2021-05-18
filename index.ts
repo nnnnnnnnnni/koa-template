@@ -8,19 +8,24 @@ import koaStaic from "koa-static";
 import cors from "koa2-cors";
 import Router from "koa-router";
 import mongoose from "mongoose";
+import redis from "ioredis";
 import Logger from "./logs";
-import checkAuth from "./lib/checkAuth";
+import { Redis } from "ioredis";
 const allRouter = new CRouter();
-const koaRouter = new Router();
+const koaRouter = new Router<any, Context>();
 
 export default class App {
   public app: Koa<{}, Context>;
+  public redisClient: Redis;
   private config: IConfig;
   constructor(config: IConfig) {
     this.app = new Koa<{}, Context>();
     this.config = config;
-    this.initializeMiddlewares();
+    if (this.config.redis) {
+      this.redisClient = this.redisConnect();
+    }
     this.dbConnect();
+    this.initializeMiddlewares();
     this.initializeRoutes(allRouter.getAllRoutes());
     this.errorHandler();
   }
@@ -46,18 +51,14 @@ export default class App {
 
   private initializeRoutes(routes: IRoute[]) {
     routes.map((route) => {
-      let _middilewares = route.Middlewares;
-      if (route.needLogin) {
-        _middilewares.unshift(checkAuth);
-      }
       if (route.methods == "GET") {
-        koaRouter.get(route.path, ..._middilewares);
+        koaRouter.get(route.path, ...route.Middlewares);
       } else if (route.methods == "POST") {
-        koaRouter.post(route.path, ..._middilewares);
+        koaRouter.post(route.path, ...route.Middlewares);
       } else if (route.methods == "PUT") {
-        koaRouter.put(route.path, ..._middilewares);
+        koaRouter.put(route.path, ...route.Middlewares);
       } else if (route.methods == "DELETE") {
-        koaRouter.delete(route.path, ..._middilewares);
+        koaRouter.delete(route.path, ...route.Middlewares);
       } else {
         Logger.log("APP", `Invalid Restful Request: [methds: ${route.methods} path: ${route.path}]`, "info");
       }
@@ -83,6 +84,20 @@ export default class App {
     });
   }
 
+  private redisConnect() {
+    const redisConnect = new redis(this.config.redis);
+    redisConnect.connect(() => {
+      this.app.context.redis = redisConnect;
+      Logger.log("REDIS", `redis://${this.config.redis?.host}:${this.config.redis?.port} 已连接`, "info", false);
+    });
+    redisConnect.monitor().then((monitor) => {
+      monitor.on("monitor", (time, args, source, database) => {
+        console.log(time, args, source, database);
+      });
+    });
+    return redisConnect;
+  }
+
   private errorHandler() {
     this.app.on("error", (err: Error) => {
       Logger.log("APP", err.stack, "error");
@@ -97,5 +112,5 @@ export default class App {
   }
 }
 
-const Server = new App(config);
+export const Server = new App(config);
 Server.start();

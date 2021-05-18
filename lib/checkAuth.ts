@@ -1,5 +1,7 @@
 import { Context, Next } from "koa";
 import jwt from "../lib/jwt";
+import Utils from "../lib/utils";
+const Response = Utils.generateResponse;
 
 /**
  * 验证jwt有效性
@@ -18,15 +20,9 @@ export default async (ctx: Context, next: Next) => {
     msg = "Invalid Token";
   } else {
     ctx.status = 200;
-    const [_, payload, __] = token.split(".");
-    ctx.user = JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
     return next();
   }
   if (msg != "") {
-    return (ctx.body = {
-      code: 0,
-      msg: msg,
-      data: {},
-    });
+    return ctx.body = Response(0, msg);
   }
 };

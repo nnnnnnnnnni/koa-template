@@ -25,6 +25,6 @@ export default class Logger {
     const start = new Date().getTime();
     await next();
     const end = new Date().getTime() - start;
-    Logger.log("APP", `${moment().format("MM/DD HH:mm:ss")}  ${ctx.method} ${ctx.url} -- [${ctx.response.status}] ${end} ms`, "info");
+    Logger.log("APP", `${moment().format("MM/DD HH:mm:ss")} (${ctx.ip}) ${ctx.method} ${ctx.url} -- [${ctx.response.status}] ${end} ms`, "info");
   }
 }
