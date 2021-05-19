@@ -39,3 +39,8 @@ export const applyUser = async(ctx: Context, next: Next) => {
   }
   return next();
 }
+
+export const applyNoUser = async(ctx: Context, next: Next) => {
+  ctx.user = null;
+  return next();
+}

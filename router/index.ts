@@ -6,7 +6,7 @@ import { Context, Next } from "koa";
 import fs from "fs";
 import path from "path";
 import { IMiddleware } from "koa-router";
-import { checkAuth, applyUser } from "../lib/userCheck";
+import { checkAuth, applyNoUser } from "../lib/userCheck";
 import Redis from "../redis/index";
 import Utils from "../lib/utils";
 import { IValidation, IValidationField } from "interface/validation";
@@ -48,7 +48,7 @@ export default class Routes {
       if (route.needLogin) {
         route.Middlewares.unshift(checkAuth);
       } else {
-        route.Middlewares.unshift(applyUser);
+        route.Middlewares.unshift(applyNoUser);
       }
       // 注册 接口字段判断
       if (route.validation) {
