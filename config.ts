@@ -3,7 +3,7 @@ import path from 'path';
 
 export const config: IConfig = {
   environment: 'development',
-  prot: 3000,
+  prot: 3001,
   localStatic: path.resolve(__dirname, 'public'),
   mongo: {
     host: '127.0.0.1',

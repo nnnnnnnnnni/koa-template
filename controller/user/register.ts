@@ -3,7 +3,8 @@ import { IUser } from "mongo/models";
 import Utils from "../../lib/utils";
 const Response = Utils.generateResponse;
 import crypto from "crypto";
-// import userModel from "../../mongo/userSchema";
+import userModel from "../../mongo/userSchema";
+import jwt from "../../lib/jwt";
 
 export default async (ctx: Context) => {
   const { email, phone, password } = ctx.request.body;
@@ -13,12 +14,18 @@ export default async (ctx: Context) => {
   const secret = Utils.randomString();
   const registerUser: IUser = {
     secret: secret,
-    password: crypto.createHmac("sha512", password).update(secret).digest("hex"),
+    password: crypto
+      .createHmac("sha512", password)
+      .update(secret)
+      .digest("hex"),
   };
   if (email && Utils.isEmail(email)) {
     registerUser.email = email;
   } else if (phone && Utils.isPhone(phone)) {
     registerUser.phone = phone;
   }
-  return (ctx.body = Response(1, '注册成功'));
+  await userModel.create(registerUser);
+  delete registerUser.password;
+  const token = jwt.generate(registerUser as any);
+  return (ctx.body = Response(1, "注册成功", { token: token }));
 };
