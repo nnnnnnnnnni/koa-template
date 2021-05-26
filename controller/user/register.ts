@@ -14,6 +14,7 @@ export default async (ctx: Context) => {
   const secret = Utils.randomString();
   const registerUser: IUser = {
     secret: secret,
+    avator: '/default_avator.png',
     password: crypto
       .createHmac("sha512", password)
       .update(secret)

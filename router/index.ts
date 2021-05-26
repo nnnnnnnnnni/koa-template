@@ -12,6 +12,14 @@ import Utils from "../lib/utils";
 import { IValidation, IValidationField } from "interface/validation";
 import { config } from "../config";
 const Response = Utils.generateResponse;
+
+/**
+ * 400  接口错误
+ * 429  接口请求频繁
+ * 403  token无效
+ * 404  接口不存在
+ * 405  method not allow
+ */
 export default class Routes {
   allRoute: IRoute[] = [];
   routeSet = new Set<string>();

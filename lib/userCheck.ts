@@ -17,7 +17,7 @@ export const checkAuth = async (ctx: Context, next: Next) => {
     ctx.status = 403;
     msg = "Need Login";
   } else if (!jwt.verify(token)) {
-    ctx.status = 400;
+    ctx.status = 403;
     msg = "Invalid Token";
   } else {
     ctx.status = 200;
