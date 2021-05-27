@@ -2,11 +2,12 @@ export interface IConfig {
   environment: "development" | "production";
   prot: number;
   localStatic: string;
-  jwt: {
+  jwtOrSession: {
     name: string;
     alg: string;
     secret: string;
     time: number;
+    authFunc: 'cookie' | 'jwt'
   };
   mongo: {
     host: string;

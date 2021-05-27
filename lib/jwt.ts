@@ -11,8 +11,8 @@ interface IJWTHeader {
  * jwt 相关
  */
 export default class JsonWebToken {
-  public static secret = config.jwt.secret;
-  public static alg = config.jwt.alg;
+  public static secret = config.jwtOrSession.secret;
+  public static alg = config.jwtOrSession.alg;
 
   /**
    * 生成token
@@ -23,7 +23,7 @@ export default class JsonWebToken {
     const header: IJWTHeader = {
       typ: "JWT",
       alg: this.alg,
-      exp: new Date().getTime() + config.jwt.time,
+      exp: new Date().getTime() + config.jwtOrSession.time,
     };
     const signedHeader = Buffer.from(JSON.stringify(header)).toString("base64");
     const signedPayload = Buffer.from(JSON.stringify(payload)).toString("base64");

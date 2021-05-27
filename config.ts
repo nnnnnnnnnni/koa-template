@@ -15,10 +15,11 @@ export const config: IConfig = {
     port: 6379,
     pass: '',
   },
-  jwt: {
+  jwtOrSession: {
     name: 'KOA-TEMPLATE-TOKEN',
     alg: 'sha256',
     secret: 'KOA_TEMPLATE_SECRET',
-    time: 1000 * 60 * 60 * 12
+    time: 1000 * 60 * 60 * 12,
+    authFunc: 'cookie'
   }
 }

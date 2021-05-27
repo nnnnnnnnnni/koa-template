@@ -4,7 +4,7 @@ import UserRoutes from "./userRoutes";
 import testRoutes from "./testRoutes";
 import { Context, Next } from "koa";
 import { IMiddleware } from "koa-router";
-import { checkAuth, applyNoUser } from "../lib/userCheck";
+import { checkJwtAuth, applyNoUser, checkCookieAuth } from "../lib/userCheck";
 import Redis from "../redis/index";
 import Utils from "../lib/utils";
 import { IValidation, IValidationField } from "interface/validation";
@@ -46,7 +46,11 @@ export default class Routes {
       }
       // 注册 权限验证
       if (route.needLogin) {
-        route.Middlewares.unshift(checkAuth);
+        if(config.jwtOrSession.authFunc == 'cookie') {
+          route.Middlewares.unshift(checkCookieAuth);
+        } else if(config.jwtOrSession.authFunc == 'jwt') {
+          route.Middlewares.unshift(checkJwtAuth);
+        }
       } else {
         route.Middlewares.unshift(applyNoUser);
       }
