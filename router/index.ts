@@ -3,8 +3,6 @@ import Logger from "../logs";
 import UserRoutes from "./userRoutes";
 import testRoutes from "./testRoutes";
 import { Context, Next } from "koa";
-import fs from "fs";
-import path from "path";
 import { IMiddleware } from "koa-router";
 import { checkAuth, applyNoUser } from "../lib/userCheck";
 import Redis from "../redis/index";
@@ -26,12 +24,6 @@ export default class Routes {
   constructor() {
     this.addRoutes(UserRoutes);
     this.addRoutes(testRoutes);
-    this.addRoute({
-      path: RegExp("/*"),
-      methods: "GET",
-      needLogin: false,
-      Middlewares: [],
-    });
   }
   addRoutes(routes: IRoute[]) {
     for (const route of routes) {
@@ -67,11 +59,6 @@ export default class Routes {
       }
       this.allRoute.push(route);
     }
-  }
-  sendHtml(ctx: Context) {
-    ctx.header["content-type"] = "text/html; charset=utf-8";
-    ctx.type = "text/html; charset=utf-8";
-    return (ctx.body = fs.createReadStream(path.resolve(__dirname, "../public/index.html")));
   }
   addRoute(route: IRoute) {
     this.allRoute.push(route);
